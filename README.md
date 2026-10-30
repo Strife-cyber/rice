@@ -12,7 +12,7 @@ bash install.sh --help
 
 Fresh machine: `git clone git@github.com:Strife-cyber/rice.git ~/rice && bash ~/rice/install.sh`
 
-The `apps` phase themes Zen and the JetBrains IDEs, so install those first, or run `bash install.sh apps` again afterwards.
+The `apps` phase themes Zen, VS Code and the JetBrains IDEs, so install those first, or run `bash install.sh apps` again afterwards.
 
 Then log out and back in. A full run takes about 20–30 minutes, most of it the one-time Eww build (the hover dashboard).
 

@@ -1,0 +1,69 @@
+{
+  // ── Theme: Catppuccin Mocha, mauve accents (matches the rest of the rice) ──
+  "workbench.colorTheme": "Catppuccin Mocha",
+  "workbench.iconTheme": "catppuccin-mocha",
+  "catppuccin.accentColor": "mauve",
+  "catppuccin.workbenchMode": "flat",
+  "catppuccin.bracketMode": "rainbow",
+  "catppuccin.italicComments": true,
+  "catppuccin.italicKeywords": true,
+  "window.titleBarStyle": "custom",
+  "window.commandCenter": true,
+  "window.menuBarVisibility": "compact",
+
+  // ── Fonts ──
+  "editor.fontFamily": "'JetBrainsMono Nerd Font', 'JetBrains Mono', monospace",
+  "editor.fontSize": 14,
+  "editor.lineHeight": 1.6,
+  "editor.fontLigatures": true,
+  "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font'",
+  "terminal.integrated.fontSize": 13,
+  "debug.console.fontFamily": "'JetBrainsMono Nerd Font'",
+
+  // ── Editor feel ──
+  "editor.cursorBlinking": "smooth",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.cursorStyle": "line",
+  "editor.smoothScrolling": true,
+  "workbench.list.smoothScrolling": true,
+  "terminal.integrated.smoothScrolling": true,
+  "editor.minimap.enabled": false,
+  "editor.renderLineHighlight": "all",
+  "editor.guides.bracketPairs": "active",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.stickyScroll.enabled": true,
+  "editor.padding.top": 8,
+  "editor.semanticHighlighting.enabled": true,
+  "editor.inlineSuggest.enabled": true,
+  "editor.formatOnPaste": false,
+  "editor.linkedEditing": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  // ── Layout ──
+  "workbench.startupEditor": "none",
+  "workbench.tree.indent": 14,
+  "workbench.tree.renderIndentGuides": "always",
+  "workbench.editor.tabSizing": "shrink",
+  "breadcrumbs.enabled": true,
+  "explorer.compactFolders": false,
+  "explorer.confirmDragAndDrop": false,
+
+  // ── Terminal ──
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.cursorStyle": "line",
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.gpuAcceleration": "on",
+
+  // ── Git ──
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+
+  // ── Extensions ──
+  "errorLens.gutterIconsEnabled": true,
+  "errorLens.fontStyleItalic": true,
+  "gitlens.currentLine.enabled": true,
+  "gitlens.codeLens.enabled": false,
+  "telemetry.telemetryLevel": "off"
+}

@@ -37,6 +37,7 @@ DOTFILES=(
   .config/rofi/config.rasi .config/rofi/themes/catppuccin-mocha.rasi
   .config/eww/eww.yuck .config/eww/eww.scss .config/eww/scripts/net.sh .config/greenclip.toml
   .local/bin/quote .local/bin/rofi-power .local/bin/dashboard
+  .config/Code/User/settings.json
 )
 
 # ── helpers ──────────────────────────────────────────────────────────────────
@@ -367,7 +368,7 @@ EOF
 }
 
 p_apps() {
-  phase "9/10 Apps: window corners & tiling, Zen, JetBrains"
+  phase "9/10 Apps: window corners & tiling, Zen, VS Code, JetBrains"
   # Cinnamon extensions — gTile (Super+G grid tiling) and Rounded Corners (radius, mauve focus border, shadows).
   # Settings are written while the extension is off: Cinnamon saves its in-memory copy over the file on unload.
   local X=$HOME/.local/share/cinnamon/extensions u
@@ -391,6 +392,15 @@ p_apps() {
     ((n++))
   done
   ((n)) && ok "Zen: Catppuccin in $n profile(s) (restart Zen)" || info "Zen not set up yet — start it once, then: bash install.sh apps"
+
+  # VS Code: Catppuccin theme + icons, Error Lens, GitLens (settings.json ships with the dotfiles)
+  if have code; then
+    local e
+    for e in catppuccin.catppuccin-vsc catppuccin.catppuccin-vsc-icons usernamehw.errorlens eamodio.gitlens; do
+      code --install-extension "$e" --force >/dev/null 2>&1 || warn "VS Code extension $e"
+    done
+    ok "VS Code: Catppuccin Mocha + extensions"
+  else info "VS Code not installed — install it, then: bash install.sh dotfiles apps"; fi
 
   # JetBrains IDEs (Toolbox): Catppuccin theme + icons, Mocha (Islands) as the active theme
   local T=$HOME/.local/share/JetBrains/Toolbox/scripts ide d o
