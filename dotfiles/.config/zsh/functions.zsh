@@ -87,3 +87,11 @@ cheat() { curl -s "https://cheat.sh/$*" }
 # weather [CITY]
 weather() { curl -s "https://wttr.in/${1:-}?format=v2" }
 
+
+# rice-save [message] — copy current configs into ~/rice, commit and push
+rice-save() {
+  bash ~/rice/install.sh --sync || return
+  git -C ~/rice add -A
+  git -C ~/rice diff --cached --quiet && { echo "rice: nothing changed"; return; }
+  git -C ~/rice commit -qm "${*:-Sync configs $(date +%F)}" && git -C ~/rice push -q && echo "rice: saved and pushed"
+}
