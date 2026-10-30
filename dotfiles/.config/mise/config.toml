@@ -1,0 +1,9 @@
+[tools]
+node = "lts"
+"pipx:rofimoji" = "latest"
+python = "3.12"
+rust = "stable"
+uv = "latest"
+
+[settings]
+experimental = true

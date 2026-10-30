@@ -1,0 +1,28 @@
+configuration {
+  modi: "drun,window,run,filebrowser,clipboard:@HOME@/.local/bin/greenclip print";
+  show-icons: true;
+  icon-theme: "Papirus-Dark";
+  font: "Inter Variable 12";
+  terminal: "kitty";
+  drun-display-format: "{name}";
+  display-drun: "󰀻  Apps";
+  display-window: "󰖯  Windows";
+  display-run: "󰜎  Run";
+  display-filebrowser: "󰉋  Files";
+  display-clipboard: "󰅇  Clipboard";
+  sidebar-mode: true;
+  matching: "fuzzy";
+  sort: true;
+  sorting-method: "fzf";
+  window-format: "{w}  {c}  {t}";
+  kb-row-up: "Up,Control+k";
+  kb-row-down: "Down,Control+j";
+  kb-remove-to-eol: "";
+  kb-accept-entry: "Return,KP_Enter";
+  kb-mode-next: "Tab,Control+l";
+  kb-mode-previous: "ISO_Left_Tab,Control+h";
+  kb-mode-complete: "";
+  kb-remove-char-back: "BackSpace";
+}
+
+@theme "catppuccin-mocha"

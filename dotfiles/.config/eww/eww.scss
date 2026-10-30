@@ -1,0 +1,85 @@
+// Catppuccin Mocha
+$base: #1e1e2e; $mantle: #181825; $crust: #11111b;
+$surface0: #313244; $surface1: #45475a; $overlay0: #6c7086;
+$text: #cdd6f4; $subtext: #a6adc8;
+$mauve: #cba6f7; $pink: #f5c2e7; $blue: #89b4fa; $peach: #fab387; $green: #a6e3a1; $red: #f38ba8; $sky: #89dceb;
+
+* { all: unset; }
+
+.trigger { background-color: rgba(0, 0, 0, 0.01); }   // effectively invisible, still receives hover
+
+.dash {
+  margin: 0 12px 12px 12px;
+  padding: 12px 14px;
+  border-radius: 0 0 24px 24px;
+  border: 2px solid $mauve;
+  border-top: none;
+  background-color: rgba(30, 30, 46, 0.985);
+  font-family: "Inter Variable", "JetBrainsMono Nerd Font";
+  color: $text;
+}
+
+.card {
+  padding: 8px 12px;
+  border-radius: 14px;
+  background-color: rgba(49, 50, 68, 0.9);
+}
+.card-title { color: $subtext; font-size: 12px; font-weight: 600; }
+.muted { color: $overlay0; font-size: 11px; }
+.big { font-size: 20px; font-weight: 800; }
+
+// Header
+.header { padding: 8px 14px; }
+.greet { color: $mauve; font-size: 14px; font-weight: 600; }
+.clock { font-size: 40px; font-weight: 800; color: $text; }
+.date { font-size: 13px; color: $subtext; margin-top: -2px; }
+.uptime { font-size: 12px; color: $overlay0; margin-top: 4px; font-family: "JetBrainsMono Nerd Font"; }
+
+// Calendar
+.cal-card { padding: 8px 12px; }
+.cal { color: $text; font-size: 12px; }
+.cal.header { color: $mauve; font-weight: 700; }
+.cal.highlight { color: $pink; font-weight: 700; }
+.cal:selected { background-color: $mauve; color: $crust; border-radius: 8px; }
+.cal:indeterminate { color: $surface1; }
+
+// Gauges
+.gauge { padding: 8px 6px 6px 6px; }
+.ring { background-color: $surface1; }
+.mauve .ring { color: $mauve; } .blue .ring { color: $blue; }
+.pink .ring { color: $pink; }   .peach .ring { color: $peach; }
+.ring-icon { font-family: "JetBrainsMono Nerd Font"; font-size: 28px; }
+.mauve .ring-icon, .mauve .gauge-value { color: $mauve; }
+.blue .ring-icon, .blue .gauge-value { color: $blue; }
+.pink .ring-icon, .pink .gauge-value { color: $pink; }
+.peach .ring-icon, .peach .gauge-value { color: $peach; }
+.gauge-value { font-size: 15px; font-weight: 800; }
+.gauge-name { font-family: "JetBrainsMono Nerd Font", "Inter Variable"; font-size: 12px; font-weight: 600; color: $subtext; }
+.gauge-detail { font-size: 11px; color: $overlay0; }
+
+// Battery / network / player
+.small { min-width: 150px; }
+.card-title, .net, .ctl, .action-icon { font-family: "JetBrainsMono Nerd Font", "Inter Variable"; }
+.bar trough { min-height: 8px; border-radius: 8px; background-color: $surface1; }
+.bar progress { min-height: 8px; border-radius: 8px; }
+.bar.green progress { background-color: $green; }
+.net { font-size: 14px; font-weight: 600; }
+.net.down { color: $sky; } .net.up { color: $pink; }
+.song { font-size: 14px; font-weight: 700; }
+.controls { margin-top: 2px; }
+.ctl {
+  padding: 2px 10px; border-radius: 8px; font-size: 14px;
+  background-color: $surface1; color: $text;
+}
+.ctl:hover { background-color: $mauve; color: $crust; }
+.ctl.play { background-color: $mauve; color: $crust; }
+
+// Quick actions
+.action {
+  padding: 6px 0; border-radius: 12px;
+  background-color: rgba(49, 50, 68, 0.9);
+}
+.action:hover { background-color: $mauve; }
+.action:hover .action-icon, .action:hover .action-label { color: $crust; }
+.action-icon { font-size: 15px; color: $mauve; }
+.action-label { font-size: 12px; color: $subtext; }

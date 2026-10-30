@@ -1,0 +1,59 @@
+* {
+  base:     #1e1e2eee;
+  mantle:   #181825;
+  crust:    #11111b;
+  surface0: #313244;
+  surface1: #45475a;
+  overlay0: #6c7086;
+  text:     #cdd6f4;
+  subtext:  #a6adc8;
+  mauve:    #cba6f7;
+  pink:     #f5c2e7;
+  red:      #f38ba8;
+
+  background-color: transparent;
+  text-color: @text;
+  margin: 0; padding: 0; spacing: 0;
+}
+
+window {
+  location: center;
+  width: 640px;
+  border: 2px;
+  border-radius: 16px;
+  border-color: @mauve;
+  background-color: @base;
+}
+
+mainbox { padding: 14px; spacing: 12px; children: [ inputbar, mode-switcher, listview ]; }
+
+inputbar {
+  padding: 12px 16px;
+  spacing: 10px;
+  border-radius: 12px;
+  background-color: @surface0;
+  children: [ prompt, entry ];
+}
+prompt { text-color: @mauve; }
+entry { placeholder: "Search…"; placeholder-color: @overlay0; cursor: text; }
+
+mode-switcher { spacing: 8px; }
+button {
+  padding: 8px;
+  border-radius: 10px;
+  background-color: @mantle;
+  text-color: @subtext;
+}
+button selected { background-color: @mauve; text-color: @crust; }
+
+listview { lines: 8; columns: 1; fixed-height: true; scrollbar: false; spacing: 4px; }
+element { padding: 9px 12px; spacing: 12px; border-radius: 10px; }
+element normal.normal, element alternate.normal { background-color: transparent; }
+element selected.normal { background-color: @surface1; text-color: @mauve; }
+element normal.urgent, element selected.urgent { text-color: @red; }
+element normal.active, element alternate.active { text-color: @pink; }
+element-icon { size: 26px; vertical-align: 0.5; }
+element-text { vertical-align: 0.5; text-color: inherit; highlight: bold #f5c2e7; }
+
+message { padding: 10px; border-radius: 10px; background-color: @surface0; }
+textbox { text-color: @text; }

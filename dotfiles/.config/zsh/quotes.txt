@@ -1,0 +1,40 @@
+The best way to predict the future is to invent it.|Alan Kay
+Simplicity is prerequisite for reliability.|Edsger W. Dijkstra
+First, solve the problem. Then, write the code.|John Johnson
+Talk is cheap. Show me the code.|Linus Torvalds
+Programs must be written for people to read, and only incidentally for machines to execute.|Harold Abelson
+Make it work, make it right, make it fast.|Kent Beck
+Any fool can write code that a computer can understand. Good programmers write code that humans can understand.|Martin Fowler
+The only way to do great work is to love what you do.|Steve Jobs
+Stay hungry, stay foolish.|Stewart Brand
+It always seems impossible until it's done.|Nelson Mandela
+Education is the most powerful weapon which you can use to change the world.|Nelson Mandela
+The secret of getting ahead is getting started.|Mark Twain
+Success is not final, failure is not fatal: it is the courage to continue that counts.|Winston Churchill
+We are what we repeatedly do. Excellence, then, is not an act, but a habit.|Will Durant
+Discipline is choosing between what you want now and what you want most.|Abraham Lincoln (attributed)
+If you want to go fast, go alone. If you want to go far, go together.|African proverb
+The man who moves a mountain begins by carrying away small stones.|Confucius
+Whether you think you can, or you think you can't — you're right.|Henry Ford
+I have not failed. I've just found 10,000 ways that won't work.|Thomas Edison
+Done is better than perfect.|Sheryl Sandberg
+Premature optimization is the root of all evil.|Donald Knuth
+The computer was born to solve problems that did not exist before.|Bill Gates
+Code is like humor. When you have to explain it, it's bad.|Cory House
+Fall seven times, stand up eight.|Japanese proverb
+Do what you can, with what you have, where you are.|Theodore Roosevelt
+Hard work beats talent when talent doesn't work hard.|Tim Notke
+The expert in anything was once a beginner.|Helen Hayes
+Dream big. Start small. Act now.|Robin Sharma
+Great things are done by a series of small things brought together.|Vincent van Gogh
+You don't have to be great to start, but you have to start to be great.|Zig Ziglar
+The future depends on what you do today.|Mahatma Gandhi
+Energy and persistence conquer all things.|Benjamin Franklin
+Knowledge is power.|Francis Bacon
+Quality is not an act, it is a habit.|Aristotle (paraphrased)
+In the middle of difficulty lies opportunity.|Albert Einstein (attributed)
+Ship it, learn, iterate.|Engineering wisdom
+Small daily improvements over time lead to stunning results.|Robin Sharma
+Believe you can and you're halfway there.|Theodore Roosevelt
+The harder I work, the luckier I get.|Samuel Goldwyn
+Focus on being productive instead of busy.|Tim Ferriss

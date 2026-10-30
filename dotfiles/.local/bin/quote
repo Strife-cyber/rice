@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# quote [--banner] — random inspiring quote in a Catppuccin box.
+# --banner also prints a gradient figlet header first.
+file=$HOME/.config/zsh/quotes.txt
+[[ -r $file ]] || exit 0
+cols=${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}
+
+if [[ $1 == --banner ]] && command -v figlet >/dev/null; then
+  # mauve → pink → peach → yellow → green → sapphire
+  grad=("203;166;247" "245;194;231" "250;179;135" "249;226;175" "166;227;161" "116;199;236")
+  i=0
+  while IFS= read -r l; do
+    printf '\e[1;38;2;%sm%s\e[0m\n' "${grad[i % ${#grad[@]}]}" "$l"; ((i++))
+  done < <(figlet -f slant -w "$cols" "Keep Building")
+fi
+
+line=$(shuf -n1 "$file"); text=${line%%|*}; author=${line##*|}
+w=$(( cols > 72 ? 64 : cols - 8 ))
+m=$'\e[38;2;203;166;247m' t=$'\e[3;38;2;205;214;244m' p=$'\e[38;2;250;179;135m' r=$'\e[0m'
+bar=$(printf '─%.0s' $(seq 1 $((w + 2))))
+printf '  %s╭%s╮%s\n' "$m" "$bar" "$r"
+while IFS= read -r l; do
+  l=${l% }; pad=$(( w - ${#l} ))
+  printf '  %s│%s %s%s%*s%s %s│%s\n' "$m" "$r" "$t" "$l" "$pad" "" "$r" "$m" "$r"
+done < <(fold -s -w "$w" <<< "$text")
+a="— $author"; printf '  %s│%s %*s%s%s %s│%s\n' "$m" "$r" $(( w - ${#a} )) "" "$p" "$a" "$m" "$r"
+printf '  %s╰%s╯%s\n\n' "$m" "$bar" "$r"

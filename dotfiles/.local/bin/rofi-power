@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Rofi power menu (Super+Escape)
+opts="󰌾  Lock\n󰍃  Log out\n󰤄  Suspend\n󰜉  Reboot\n󰖳  Reboot to Windows\n󰐥  Shut down"
+choice=$(echo -e "$opts" | rofi -dmenu -i -p "󰐥  Power" -theme-str 'window {width: 360px;} listview {lines: 6;}')
+confirm() {
+  [[ $(echo -e "Yes\nNo" | rofi -dmenu -p "$1?" -theme-str 'window {width: 300px;} listview {lines: 2;}') == Yes ]]
+}
+case $choice in
+  *Lock)      cinnamon-screensaver-command --lock ;;
+  *"Log out") confirm "Log out" && cinnamon-session-quit --logout --no-prompt ;;
+  *Suspend)   systemctl suspend ;;
+  *"Reboot to Windows")
+    confirm "Reboot into Windows" && {
+      if pkexec /usr/local/sbin/reboot-to-windows; then systemctl reboot
+      else notify-send "Reboot to Windows" "Couldn't set the GRUB entry"; fi
+    } ;;
+  *Reboot)    confirm "Reboot" && systemctl reboot ;;
+  *"Shut down") confirm "Shut down" && systemctl poweroff ;;
+esac

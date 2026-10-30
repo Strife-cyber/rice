@@ -1,0 +1,112 @@
+;; ── Catppuccin Mocha hover dashboard ─────────────────────────────────────────
+;; Hover the top-centre edge (or press Super+A) → the dashboard slides down.
+;; Move the mouse away → it slides back up. Controlled by ~/.local/bin/dashboard.
+
+(defvar dash_open false)
+
+;; ── data ─────────────────────────────────────────────────────────────────────
+(defpoll clock_time :interval "5s" :run-while dash_open "date +%H:%M")
+(defpoll clock_date :interval "60s" :run-while dash_open "date '+%A, %d %B'")
+(defpoll uptime_s   :interval "60s" :run-while dash_open "uptime -p | sed 's/^up //'")
+(defpoll greeting   :interval "300s" :run-while dash_open
+  "h=$(date +%H); if [ $h -lt 12 ]; then echo 'Good morning'; elif [ $h -lt 18 ]; then echo 'Good afternoon'; else echo 'Good evening'; fi")
+(defpoll gpu :interval "3s" :run-while dash_open :initial '{"util":0,"temp":0}'
+  "nvidia-smi --query-gpu=utilization.gpu,temperature.gpu --format=csv,noheader,nounits 2>/dev/null | awk -F', ' '{printf \"{\\\"util\\\":%d,\\\"temp\\\":%d}\", $1, $2}' || echo '{\"util\":0,\"temp\":0}'")
+(defpoll net :interval "2s" :run-while dash_open :initial '{"name":"…","down":0,"up":0}'
+  "~/.config/eww/scripts/net.sh")
+(deflisten music :initial '{"status":"Stopped","artist":"","title":""}'
+  "playerctl --follow metadata --format '{\"status\":\"{{status}}\",\"artist\":\"{{markup_escape(artist)}}\",\"title\":\"{{markup_escape(title)}}\"}' 2>/dev/null")
+
+;; ── windows ──────────────────────────────────────────────────────────────────
+;; 360×2 px invisible hover strip at the top centre (corners stay free for Zen)
+(defwindow trigger
+  :monitor 0
+  :geometry (geometry :x "0px" :y "0px" :width "360px" :height "2px" :anchor "top center")
+  :windowtype "dock"
+  :wm-ignore true
+  :stacking "fg"
+  (eventbox :class "trigger" :onhover "setsid -f ~/.local/bin/dashboard open" ""))
+
+(defwindow dashboard
+  :monitor 0
+  :geometry (geometry :x "0px" :y "0px" :width "780px" :anchor "top center")
+  :windowtype "dock"
+  :wm-ignore true
+  :stacking "fg"
+  (box
+    (revealer :reveal dash_open :transition "slidedown" :duration "260ms"
+      (dash))))
+
+;; ── layout ───────────────────────────────────────────────────────────────────
+(defwidget dash []
+  (box :class "dash" :orientation "v" :space-evenly false :spacing 10
+    (box :orientation "h" :space-evenly false :spacing 10
+      (header)
+      (box :class "gauges" :orientation "h" :spacing 10 :hexpand true
+      (gauge :name "CPU" :icon "󰻠" :value {EWW_CPU.avg}
+             :detail "${round(EWW_TEMPS.K10TEMP_TCTL ?: 0, 0)}°C" :cls "mauve")
+      (gauge :name "GPU" :icon "󰢮" :value {gpu.util} :detail "${gpu.temp}°C" :cls "blue")
+      (gauge :name "RAM" :icon "󰍛" :value {EWW_RAM.used_mem_perc}
+             :detail "${round(EWW_RAM.used_mem / 1073741824, 1)} / ${round(EWW_RAM.total_mem / 1073741824, 0)} GB" :cls "pink")
+      (gauge :name "Disk" :icon "󰋊" :value {EWW_DISK["/"].used_perc}
+             :detail "${round(EWW_DISK["/"].free / 1073741824, 0)} GB free" :cls "peach")))
+    (box :orientation "h" :spacing 10
+      (battery)
+      (network)
+      (player))
+    (actions)))
+
+(defwidget header []
+  (box :class "card header" :orientation "v" :space-evenly false :width 210
+    (label :class "greet" :xalign 0 :text "${greeting}, ${get_env("USER")}")
+    (label :class "clock" :xalign 0 :text clock_time)
+    (label :class "date" :xalign 0 :text clock_date)
+    (label :class "uptime" :xalign 0 :text "󰅐  up ${uptime_s}")))
+
+(defwidget gauge [name icon value detail cls]
+  (box :class "card gauge ${cls}" :orientation "v" :space-evenly false :spacing 4
+    (circular-progress :class "ring" :value value :thickness 7 :start-at 75 :clockwise true :width 64 :height 64 :halign "center"
+      (label :class "gauge-value" :text "${round(value, 0)}%"))
+    (label :class "gauge-name" :text "${icon}  ${name}")
+    (label :class "gauge-detail" :text detail)))
+
+(defwidget battery []
+  (box :class "card small" :orientation "v" :space-evenly false :spacing 6
+    (label :class "card-title" :xalign 0
+      :text "${EWW_BATTERY.BAT1.status == "Charging" ? "󰂄" : "󰁹"}  Battery")
+    (label :class "big" :xalign 0 :text "${EWW_BATTERY.BAT1.capacity}%")
+    (progress :class "bar green" :value {EWW_BATTERY.BAT1.capacity})
+    (label :class "muted" :xalign 0 :text {EWW_BATTERY.BAT1.status})))
+
+(defwidget network []
+  (box :class "card small" :orientation "v" :space-evenly false :spacing 6
+    (label :class "card-title" :xalign 0 :text "󰖩  ${net.name}")
+    (label :class "net down" :xalign 0
+      :text "󰁅  ${net.down} KB/s")
+    (label :class "net up" :xalign 0
+      :text "󰁝  ${net.up} KB/s")))
+
+(defwidget player []
+  (box :class "card player" :orientation "v" :space-evenly false :spacing 6 :hexpand true
+    (label :class "card-title" :xalign 0 :text "󰝚  ${music.status == "Stopped" ? "Nothing playing" : music.status}")
+    (label :class "song" :xalign 0 :limit-width 30 :text {music.title})
+    (label :class "muted" :xalign 0 :limit-width 34 :text {music.artist})
+    (box :class "controls" :halign "start" :spacing 6 :space-evenly false
+      (button :class "ctl" :onclick "playerctl previous" "󰒮")
+      (button :class "ctl play" :onclick "playerctl play-pause" {music.status == "Playing" ? "󰏤" : "󰐊"})
+      (button :class "ctl" :onclick "playerctl next" "󰒭"))))
+
+(defwidget actions []
+  (box :class "actions" :spacing 10
+    (action :icon "󰆍" :label "Terminal"   :cmd "setsid -f kitty")
+    (action :icon "󰉋" :label "Files"      :cmd "setsid -f nemo")
+    (action :icon "󰄀" :label "Screenshot" :cmd "setsid -f sh -c '~/.local/bin/dashboard close; sleep 0.4; gnome-screenshot -i'")
+    (action :icon "󰒓" :label "Settings"   :cmd "setsid -f cinnamon-settings")
+    (action :icon "󰌾" :label "Lock"       :cmd "cinnamon-screensaver-command --lock")
+    (action :icon "󰐥" :label "Power"      :cmd "setsid -f sh -c '~/.local/bin/dashboard close; ~/.local/bin/rofi-power'")))
+
+(defwidget action [icon label cmd]
+  (button :class "action" :onclick cmd
+    (box :orientation "h" :space-evenly false :spacing 6 :halign "center"
+      (label :class "action-icon" :text icon)
+      (label :class "action-label" :text label))))

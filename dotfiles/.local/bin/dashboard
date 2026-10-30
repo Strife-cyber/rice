@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# dashboard start|open|close|toggle — Eww hover dashboard (top-centre edge, Super+A)
+# Opening starts a small watcher that closes the dashboard once the pointer has
+# been outside it for ~0.6 s (GTK hover-lost events are unreliable mid-animation).
+EWW=$HOME/.local/bin/eww
+RUN=${XDG_RUNTIME_DIR:-/tmp}
+LOCK=$RUN/eww-dashboard.lock
+WIDTH=780 HEIGHT=330   # dashboard box incl. margin (see eww.yuck geometry)
+
+is_open() { [[ $($EWW get dash_open 2>/dev/null) == true ]]; }
+
+watch_pointer() {
+  local W x0 x1 outside=0 X Y
+  W=$(xdotool getdisplaygeometry | cut -d' ' -f1)
+  x0=$(( (W - WIDTH) / 2 )); x1=$(( x0 + WIDTH ))
+  while is_open; do
+    sleep 0.3
+    eval "$(xdotool getmouselocation --shell 2>/dev/null)"
+    if (( X < x0 || X > x1 || Y > HEIGHT )); then
+      (( ++outside >= 2 )) && { "$0" close; return; }
+    else outside=0; fi
+  done
+}
+
+case ${1:-toggle} in
+  start)
+    $EWW kill >/dev/null 2>&1
+    $EWW daemon && sleep 0.5 && $EWW open trigger ;;
+  open)
+    exec 9>"$LOCK"; flock -n 9 || exit 0     # hover fires repeatedly; first one wins
+    is_open && exit 0
+    $EWW open dashboard && $EWW update dash_open=true
+    exec 9>&-
+    setsid "$0" _watch >/dev/null 2>&1 < /dev/null & ;;
+  _watch)
+    watch_pointer ;;
+  close)
+    exec 9>"$LOCK"; flock -n 9 || exit 0
+    is_open || { $EWW close dashboard >/dev/null 2>&1; exit 0; }
+    $EWW update dash_open=false; sleep 0.28; $EWW close dashboard ;;
+  toggle)
+    if is_open; then "$0" close; else "$0" open; fi ;;
+  *) echo "usage: dashboard start|open|close|toggle"; exit 1 ;;
+esac
