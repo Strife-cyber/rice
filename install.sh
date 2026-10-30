@@ -4,7 +4,7 @@
 #  Terminal → dev tools → desktop → login & boot, reproducible from scratch.
 #
 #  Usage:  bash install.sh [options] [phase ...]
-#    phases:  packages tools terminal themes dotfiles git runtimes desktop system
+#    phases:  packages tools terminal themes dotfiles git runtimes desktop apps system
 #             (default: all, in that order)
 #    --no-grub      skip the GRUB theme / boot-menu changes
 #    --no-system    skip everything in the "system" phase (login screen, GRUB, helper)
@@ -87,7 +87,7 @@ raw() { curl -fsSL "https://raw.githubusercontent.com/$1" -o "$2" --create-dirs 
 
 # ── phases ───────────────────────────────────────────────────────────────────
 p_packages() {
-  phase "1/9 System packages (sudo)"
+  phase "1/10 System packages (sudo)"
   sudo apt-get update -qq
   sudo apt-get install -y \
     zsh tmux git curl unzip xz-utils build-essential xclip ncurses-term figlet python3-venv \
@@ -99,7 +99,7 @@ p_packages() {
 }
 
 p_tools() {
-  phase "2/9 CLI tools → ~/.local/bin"
+  phase "2/10 CLI tools → ~/.local/bin"
   mkdir -p "$BIN" "$OPT"
   gh_bin starship   starship/starship        'x86_64-unknown-linux-musl\.tar\.gz$' starship
   gh_bin eza        eza-community/eza        '^eza_x86_64-unknown-linux-gnu\.tar\.gz$' eza
@@ -133,7 +133,7 @@ p_tools() {
 }
 
 p_terminal() {
-  phase "3/9 Kitty, fonts, shell & editor plugins"
+  phase "3/10 Kitty, fonts, shell & editor plugins"
   local url
   url=$(gh_asset kovidgoyal/kitty '-x86_64\.txz$')
   mkdir -p "$HOME/.local/kitty.app" && curl -fsSL "$url" | tar -xJ -C "$HOME/.local/kitty.app" &&
@@ -167,7 +167,7 @@ p_terminal() {
 }
 
 p_themes() {
-  phase "4/9 Catppuccin themes for CLI tools"
+  phase "4/10 Catppuccin themes for CLI tools"
   local C=$HOME/.config
   raw catppuccin/kitty/main/themes/mocha.conf                          "$C/kitty/current-theme.conf"
   raw "catppuccin/bat/main/themes/Catppuccin%20Mocha.tmTheme"          "$C/bat/themes/Catppuccin Mocha.tmTheme"
@@ -184,7 +184,7 @@ p_themes() {
 }
 
 p_dotfiles() {
-  phase "5/9 Dotfiles"
+  phase "5/10 Dotfiles"
   local f dst
   for f in "${DOTFILES[@]}"; do
     dst=$HOME/$f
@@ -206,7 +206,7 @@ p_dotfiles() {
 }
 
 p_git() {
-  phase "6/9 Git (delta pager, sane defaults, aliases)"
+  phase "6/10 Git (delta pager, sane defaults, aliases)"
   local g="git config --global"
   $g include.path '~/.config/delta/catppuccin.gitconfig'
   $g core.pager delta;                $g interactive.diffFilter 'delta --color-only'
@@ -222,7 +222,7 @@ p_git() {
 }
 
 p_runtimes() {
-  phase "7/9 Runtimes, Neovim plugins, caches"
+  phase "7/10 Runtimes, Neovim plugins, caches"
   export PATH=$BIN:$HOME/.local/share/mise/shims:$PATH
   mise install -y >/dev/null 2>&1 && ok "mise: $(mise ls --current 2>/dev/null | awk '{print $1"@"$2}' | xargs)" || warn "mise install"
   mise use -g uv@latest >/dev/null 2>&1 && mise use -g pipx:rofimoji@latest >/dev/null 2>&1 && ok "rofimoji (emoji picker)" || warn rofimoji
@@ -245,7 +245,7 @@ p_runtimes() {
 }
 
 p_desktop() {
-  phase "8/9 Desktop (Cinnamon)"
+  phase "8/10 Desktop (Cinnamon)"
   [[ ${XDG_CURRENT_DESKTOP:-} == *Cinnamon* ]] || info "not in a Cinnamon session — settings are written but apply at next login"
   local W=$WORK/desk; mkdir -p "$W" "$HOME/.themes" "$HOME/.icons" "$HOME/.local/share/icons"
 
@@ -366,8 +366,52 @@ EOF
   ok "autostart: plank, greenclip, eww dashboard"
 }
 
+p_apps() {
+  phase "9/10 Apps: window corners & tiling, Zen, JetBrains"
+  # Cinnamon extensions — gTile (Super+G grid tiling) and Rounded Corners (radius, mauve focus border, shadows).
+  # Settings are written while the extension is off: Cinnamon saves its in-memory copy over the file on unload.
+  local X=$HOME/.local/share/cinnamon/extensions u
+  mkdir -p "$X"; gsettings set org.cinnamon enabled-extensions "[]"; sleep 1
+  for u in gTile@shuairan RoundedCorners@klangman; do
+    curl -fsSL "https://cinnamon-spices.linuxmint.com/files/extensions/$u.zip" -o "$WORK/$u.zip" \
+      && rm -rf "$X/$u" && unzip -qo "$WORK/$u.zip" -d "$X" || warn "extension $u"
+  done
+  local S=$HOME/.config/cinnamon/spices/RoundedCorners@klangman; mkdir -p "$S"
+  cp "$DOT/cinnamon/RoundedCorners@klangman.json" "$S/"
+  gsettings set org.cinnamon enabled-extensions "['gTile@shuairan', 'RoundedCorners@klangman']"
+  ok "window extensions: gTile, Rounded Corners"
+
+  # Zen browser (Flatpak): Catppuccin Mocha Mauve userChrome/userContent in every profile
+  local Z=$HOME/.var/app/app.zen_browser.zen/.zen prof n=0
+  for prof in "$Z"/*/; do
+    [[ -f $prof/prefs.js || -f $prof/times.json ]] || continue
+    mkdir -p "$prof/chrome"; cp "$DOT"/zen/* "$prof/chrome/"
+    grep -qs legacyUserProfileCustomizations "$prof/user.js" \
+      || echo 'user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);' >> "$prof/user.js"
+    ((n++))
+  done
+  ((n)) && ok "Zen: Catppuccin in $n profile(s) (restart Zen)" || info "Zen not set up yet — start it once, then: bash install.sh apps"
+
+  # JetBrains IDEs (Toolbox): Catppuccin theme + icons, Mocha (Islands) as the active theme
+  local T=$HOME/.local/share/JetBrains/Toolbox/scripts ide d o
+  if [[ -d $T ]]; then
+    for ide in "$T"/*; do
+      pgrep -f "Toolbox/apps/.*/bin/$(basename "$ide")" >/dev/null && { info "$(basename "$ide") is running — skipped"; continue; }
+      timeout 300 "$ide" installPlugins com.github.catppuccin.jetbrains com.github.catppuccin.jetbrains_icons >/dev/null 2>&1 \
+        || warn "plugins for $(basename "$ide")"
+    done
+    for d in "$HOME"/.config/JetBrains/*20* "$HOME"/.config/Google/AndroidStudio*; do
+      [[ -d $d ]] || continue; o=$d/options; mkdir -p "$o"
+      [[ -f $o/colors.scheme.xml && ! -f $o/colors.scheme.xml.bak-rice ]] && cp "$o/colors.scheme.xml" "$o/colors.scheme.xml.bak-rice"
+      printf '<application>\n  <component name="LafManager" autodetect="false">\n    <laf themeId="com.github.catppuccin.mocha.islands.jetbrains" />\n  </component>\n</application>\n' > "$o/laf.xml"
+      printf '<application>\n  <component name="EditorColorsManagerImpl">\n    <global_color_scheme name="Catppuccin Mocha" />\n  </component>\n</application>\n' > "$o/colors.scheme.xml"
+    done
+    ok "JetBrains: Catppuccin Mocha theme + icons"
+  else info "JetBrains Toolbox not found — install IDEs first, then: bash install.sh apps"; fi
+}
+
 p_system() {
-  phase "9/9 Login screen, GRUB, reboot-to-Windows (sudo)"
+  phase "10/10 Login screen, GRUB, reboot-to-Windows (sudo)"
   (( NO_SYSTEM )) && { info "skipped (--no-system)"; return; }
   sudo env NO_GRUB=$NO_GRUB GTK_THEME="$GTK_THEME" CURSOR="$CURSOR" WALL="$HOME/Pictures/Wallpapers/$WALLPAPER" H="$HOME" bash <<'ROOT'
 set -euo pipefail
@@ -433,10 +477,12 @@ sync_back() {
     [[ -x $HOME/$f ]] && chmod +x "$DOT/$f"
   done
   ok "${#DOTFILES[@]} files synced"
+  local f2=$HOME/.config/cinnamon/spices/RoundedCorners@klangman/RoundedCorners@klangman.json
+  [[ -f $f2 ]] && { mkdir -p "$DOT/cinnamon"; cp "$f2" "$DOT/cinnamon/"; ok "Rounded Corners settings synced"; }
 }
 
 # ── main ─────────────────────────────────────────────────────────────────────
-ALL=(packages tools terminal themes dotfiles git runtimes desktop system)
+ALL=(packages tools terminal themes dotfiles git runtimes desktop apps system)
 RUN=()
 while (($#)); do
   case $1 in
@@ -444,7 +490,7 @@ while (($#)); do
     --no-system) NO_SYSTEM=1 ;;
     --sync) sync_back; exit ;;
     -h|--help) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit ;;
-    packages|tools|terminal|themes|dotfiles|git|runtimes|desktop|system) RUN+=("$1") ;;
+    packages|tools|terminal|themes|dotfiles|git|runtimes|desktop|apps|system) RUN+=("$1") ;;
     *) echo "unknown option: $1 (try --help)"; exit 1 ;;
   esac; shift
 done
